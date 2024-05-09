@@ -27,6 +27,7 @@ build:
   missing_dso_whitelist:
     # This is a driver file, might be able to use cuda-compat to remove this
     - '*/libcuda.so.1'  # [linux]
+    - '*/libgcc_s.so.1' # [linux]
     - '*/nvcuda.dll'    # [win]
 
 requirements:
@@ -37,6 +38,7 @@ requirements:
   host:
     - cuda-version {{ cuda_version }}
     - cuda-cupti
+    - libstdcxx-ng      # [ppc64le]
   run:
     - {{ pin_compatible("cuda-version", max_pin="x.x") }}
     - cuda-cupti
