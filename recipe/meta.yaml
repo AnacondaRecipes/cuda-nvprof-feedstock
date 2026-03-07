@@ -2,10 +2,8 @@
 {% set version = "12.9.79" %}
 {% set cuda_version = "12.9" %}
 {% set platform = "linux-x86_64" %}  # [linux64]
-{% set platform = "linux-ppc64le" %}  # [ppc64le]
 {% set platform = "windows-x86_64" %}  # [win]
 {% set target_name = "x86_64-linux" %}  # [linux64]
-{% set target_name = "ppc64le-linux" %}  # [ppc64le]
 {% set target_name = "sbsa-linux" %}  # [aarch64]
 {% set extension = "tar.xz" %}  # [not win]
 {% set extension = "zip" %}  # [win]
@@ -22,12 +20,11 @@ source:
 build:
   number: 0
   binary_relocation: false
-  skip: true  # [osx or aarch64 or ppc64le]
+  skip: true  # [osx or aarch64]
   missing_dso_whitelist:
     # This is a driver file, might be able to use cuda-compat to remove this
     - '*/libcuda.so.1'  # [linux]
     - '*/libgcc_s.so.1'  # [linux]
-    - '*/libstdc++.so.6'  # [ppc64le]
     - '*/nvcuda.dll'    # [win]
 
 requirements:
@@ -39,7 +36,9 @@ requirements:
     - cf-nvidia-tools 1  # [linux]
   host:
     - cuda-version {{ cuda_version }}
-    - cuda-cupti
+    # The following libraries need to be pinned to the exact version due to dependency resolver issues
+    # It would be unsafe to pick a different version (versions are specific to CTK 12.9)
+    - cuda-cupti ==12.9.79
   run:
     - {{ pin_compatible("cuda-version", max_pin="x.x") }}
     - cuda-cupti
@@ -74,11 +73,13 @@ about:
   license_file: LICENSE
   license: LicenseRef-NVIDIA-End-User-License-Agreement
   license_url: https://docs.nvidia.com/cuda/eula/index.html
+  license_family: Other
   summary: Tool for collecting and viewing CUDA application profiling data
   description: |
     Tool for collecting and viewing CUDA application profiling data from
     the command-line.
   doc_url: https://docs.nvidia.com/cuda/index.html
+  dev_url: https://docs.nvidia.com/cuda/index.html
 
 extra:
   recipe-maintainers:
